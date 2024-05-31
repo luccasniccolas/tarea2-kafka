@@ -79,12 +79,6 @@ func main() {
 			fmt.Println(formattedTime, order)
 			time.Sleep(5 * time.Second)
 			sendToStatus(wStatus, order)
-
-			//time.Sleep(5 * time.Second) // Mandamos nuevamente a status después de 5 segundos
-
-			// Cambiamos el estado del pedido y lo enviamos nuevamente a status
-			//updateOrderStatus(&order)
-			//sendToStatus(wStatus, order)
 		}
 	}()
 
