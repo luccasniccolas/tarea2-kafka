@@ -67,6 +67,7 @@ func orderHandler(kafkaWriter *kafka.Writer) func(w http.ResponseWriter, r *http
 		// Enviar el mensaje a Kafka
 		err = kafkaWriter.WriteMessages(r.Context(), msg)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Error al enviar la orden a Kafka", http.StatusInternalServerError)
 			return
 		}
@@ -80,9 +81,9 @@ func orderHandler(kafkaWriter *kafka.Writer) func(w http.ResponseWriter, r *http
 }
 
 // funcion para generar un productor
-func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
+func getKafkaWriter(topic string) *kafka.Writer {
 	return &kafka.Writer{
-		Addr:         kafka.TCP(kafkaURL),
+		Addr:         kafka.TCP("localhost:9092", "localhost:9093", "localhost:9094"),
 		Topic:        topic,
 		Balancer:     &kafka.LeastBytes{},
 		BatchTimeout: 10 * time.Millisecond, // Reducir BatchTimeout a 10ms
@@ -90,9 +91,9 @@ func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 }
 
 func main() {
-	kafkaURL := "localhost:9092"
+
 	topic := "orders"
-	kafkaWriter := getKafkaWriter(kafkaURL, topic)
+	kafkaWriter := getKafkaWriter(topic)
 
 	defer kafkaWriter.Close()
 

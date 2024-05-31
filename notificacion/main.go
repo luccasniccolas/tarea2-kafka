@@ -26,8 +26,8 @@ type Order struct {
 }
 
 // Creación de un consumidor
-func getKafkaReader(kafkaURL, topic, groupID string) *kafka.Reader {
-	brokers := strings.Split(kafkaURL, ",")
+func getKafkaReader(topic, groupID string) *kafka.Reader {
+	brokers := strings.Split("localhost:9092,localhost:9093,localhost:9094", ",")
 	return kafka.NewReader(kafka.ReaderConfig{
 		Brokers:          brokers,
 		GroupID:          groupID,
@@ -44,11 +44,11 @@ func getKafkaReader(kafkaURL, topic, groupID string) *kafka.Reader {
 func main() {
 	auth := smtp.PlainAuth("", "tareasistemalaraya2002@gmail.com", "ztgm ooqh ieiq dyuh", "smtp.gmail.com")
 
-	brokers := "localhost:9092"
+	//brokers := "localhost:9092"
 	consumerGroup := "process-notifications" // Creamos un consumer group que se encarga de leer las notificaciones
 	topic := "notifications"
 
-	rNotification := getKafkaReader(brokers, topic, consumerGroup)
+	rNotification := getKafkaReader(topic, consumerGroup)
 	defer rNotification.Close()
 
 	go func() {

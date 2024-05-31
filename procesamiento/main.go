@@ -19,8 +19,8 @@ type OrderStatus struct {
 }
 
 // Creación de un consumer
-func getKafkaReader(kafkaURL, topic, groupID string) *kafka.Reader {
-	brokers := strings.Split(kafkaURL, ",")
+func getKafkaReader(topic, groupID string) *kafka.Reader {
+	brokers := strings.Split("localhost:9092,localhost:9093,localhost:9094", ",")
 	return kafka.NewReader(kafka.ReaderConfig{
 		Brokers:          brokers,
 		GroupID:          groupID,
@@ -35,9 +35,9 @@ func getKafkaReader(kafkaURL, topic, groupID string) *kafka.Reader {
 }
 
 // Creación de productor
-func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
+func getKafkaWriter(topic string) *kafka.Writer {
 	return &kafka.Writer{
-		Addr:         kafka.TCP(kafkaURL),
+		Addr:         kafka.TCP("localhost:9092", "localhost:9093", "localhost:9094"),
 		Topic:        topic,
 		Balancer:     &kafka.LeastBytes{},
 		BatchTimeout: 10 * time.Millisecond, // Reducir BatchTimeout a 10ms
@@ -45,14 +45,14 @@ func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 }
 
 func main() {
-	brokers := "localhost:9092"
+	//brokers := "localhost:9092"
 	consumerGroup := "process-order" // Creamos un consumer group que se encarga de leer las ordenes para cambiarlas de estado
 	topics := []string{"orders", "status", "notifications"}
 
-	rOrders := getKafkaReader(brokers, topics[0], consumerGroup)
-	rOrdersStatus := getKafkaReader(brokers, topics[1], consumerGroup)
-	wNotifications := getKafkaWriter(brokers, topics[2])
-	wStatus := getKafkaWriter(brokers, topics[1])
+	rOrders := getKafkaReader(topics[0], consumerGroup)
+	rOrdersStatus := getKafkaReader(topics[1], consumerGroup)
+	wNotifications := getKafkaWriter(topics[2])
+	wStatus := getKafkaWriter(topics[1])
 
 	defer wNotifications.Close()
 	defer rOrdersStatus.Close()
