@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var (
@@ -28,11 +29,15 @@ type Order struct {
 func getKafkaReader(kafkaURL, topic, groupID string) *kafka.Reader {
 	brokers := strings.Split(kafkaURL, ",")
 	return kafka.NewReader(kafka.ReaderConfig{
-		Brokers:  brokers,
-		GroupID:  groupID,
-		Topic:    topic,
-		MinBytes: 10e3, // 10KB
-		MaxBytes: 10e6, // 10MB
+		Brokers:          brokers,
+		GroupID:          groupID,
+		Topic:            topic,
+		MinBytes:         10e3,                   // 10KB
+		MaxBytes:         10e6,                   // 10MB
+		MaxWait:          500 * time.Millisecond, // Reducir MaxWait a 500ms
+		ReadBatchTimeout: 500 * time.Millisecond, // Reducir ReadBatchTimeout a 500ms
+		ReadLagInterval:  1 * time.Second,        // Ajustar el intervalo de retraso de lectura a 1s
+		CommitInterval:   1 * time.Second,        // Reducir CommitInterval a 1s
 	})
 }
 
@@ -73,6 +78,10 @@ func main() {
 			if err != nil {
 				log.Fatalf("Error al enviar el correo: %v\n", err)
 			}
+			// debugging
+			/*currentTime := time.Now()
+			formattedTime := currentTime.Format("2006-01-02 15:04:05")
+			fmt.Println(formattedTime, "Mail enviado")*/
 		}
 	}()
 

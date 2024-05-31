@@ -81,9 +81,6 @@ func main() {
 		time.Sleep(5 * time.Second)
 		if order.Status != "finalizado" {
 			sendToStatus(wStatus, order)
-		} else {
-			// Enviamos notificación final y no reenviamos a status
-			sendToNotifications(wNotifications, order)
 		}
 	}
 
