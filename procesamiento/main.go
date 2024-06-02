@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/segmentio/kafka-go"
 	"log"
 	"strconv"
@@ -63,9 +64,9 @@ func main() {
 		order.Status = "recibido"
 		sendToNotifications(wNotifications, order)
 		// debugging
-		/*currentTime := time.Now()
+		currentTime := time.Now()
 		formattedTime := currentTime.Format("2006-01-02 15:04:05")
-		fmt.Println(formattedTime, order)*/
+		fmt.Println(formattedTime, order)
 		time.Sleep(5 * time.Second)
 		sendToStatus(wStatus, order)
 	}
@@ -74,10 +75,10 @@ func main() {
 	processOrderStatus := func(order OrderStatus, wNotifications, wStatus *kafka.Writer) {
 		updateOrderStatus(&order)
 		sendToNotifications(wNotifications, order)
-		// debugging
-		/*currentTime := time.Now()
+		//debugging
+		currentTime := time.Now()
 		formattedTime := currentTime.Format("2006-01-02 15:04:05")
-		fmt.Println(formattedTime, order)*/
+		fmt.Println(formattedTime, order)
 		time.Sleep(5 * time.Second)
 		if order.Status != "finalizado" {
 			sendToStatus(wStatus, order)
