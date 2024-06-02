@@ -35,22 +35,19 @@ func orderHandler(kafkaWriter *kafka.Writer) func(w http.ResponseWriter, r *http
 		if r.Method != http.MethodPost {
 			http.Error(w, "ONLY POST", http.StatusMethodNotAllowed)
 			return
-		}
-
+		} // manejamos si el usuario intenta otro metodo http
 		var data Data
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			http.Error(w, "Solicitud incorrecta", http.StatusBadRequest)
 			return
 		}
-
 		order := Order{
 			ID:          generateUniqueID(),
 			ProductName: data.ProductName,
 			Price:       data.Price,
 			Email:       data.Email,
 		}
-
 		// codificamos a json la orden para enviarla
 		orderMSG, err := json.Marshal(order)
 		if err != nil {
